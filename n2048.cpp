@@ -137,6 +137,18 @@ void n2048::check_finish() {
     }
     if (empty == 0) {
         // lose
+        brick temp = *ebricks[0];
+        int x = temp.x;
+        int y = temp.y;
+        if (x > 0 && gbricks[x-1][y].number == temp.number)
+            return;
+        if (x < MHEIGHT-1 && gbricks[x+1][y].number == temp.number)
+            return;
+        if (y > 0 && gbricks[x][y-1].number == temp.number)
+            return;
+        if (y < MWIDTH && gbricks[x-1][y].number == temp.number)
+            return;
+
         wattron(mw.mainwin, COLOR_PAIR(0));
         mvwprintw(mw.mainwin, HEIGHT/2, WIDTH/2-4, "You Lose!");
         wattroff(mw.mainwin, COLOR_PAIR(0));

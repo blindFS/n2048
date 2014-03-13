@@ -4,8 +4,8 @@
 #ifndef MWIN_H
 #define MWIN_H
 
-#define MHEIGHT 5
-#define MWIDTH 5
+#define MHEIGHT 4
+#define MWIDTH 4
 #define MMAX max(MHEIGHT, MWIDTH)
 #define MNUM MHEIGHT*MWIDTH
 
