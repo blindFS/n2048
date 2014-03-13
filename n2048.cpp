@@ -60,6 +60,8 @@ bool n2048::mov_and_merge(brick *temp[MWIDTH]) {
         if (temp[i]->number == temp[i+1]->number && temp[i]->number != 0) {
             score += 1 << temp[i]->number;
             temp[i]->number++;
+            if (max < temp[i]->number)
+                max = temp[i]->number;
             temp[i+1]->number = 0;
             moved = true;
             need_new = true;
@@ -126,11 +128,12 @@ void n2048::brick_reduce(int direction) {
 }
 
 void n2048::check_finish() {
-    if (max == 11) {
+    if (max > 10) {
         wattron(mw.mainwin, COLOR_PAIR(0));
         mvwprintw(mw.mainwin, HEIGHT/2, WIDTH/2-4, "You Win!");
         wattroff(mw.mainwin, COLOR_PAIR(0));
         wrefresh(mw.mainwin);
+        sleep(5);
     }
     if (empty == 0) {
         // lose
