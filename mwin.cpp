@@ -18,7 +18,7 @@ mwin::mwin() {
     noecho();
     start_color();
 
-    init_pair(0, COLOR_WHITE, COLOR_BLACK);
+    init_pair(0, COLOR_BLACK, COLOR_WHITE);
     init_pair(1, COLOR_BLACK, COLOR_RED);
     init_pair(2, COLOR_BLACK, COLOR_YELLOW);
     init_pair(3, COLOR_BLACK, COLOR_BLUE);
@@ -33,7 +33,7 @@ mwin::mwin() {
 
     curs_set(0); // remove curser
     refresh();
-    mainwin    = newwin(HEIGHT, WIDTH, 0, 0);
-    scorewin   = newwin(10, 20, HEIGHT, WIDTH/2-10);
+    mainwin    = newwin(HEIGHT+1, WIDTH+2, 0, 0);
+    scorewin   = newwin(10, 20, HEIGHT+1, WIDTH/2-10);
     box(mainwin, 0, 0);
 }

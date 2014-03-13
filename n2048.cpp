@@ -127,18 +127,20 @@ void n2048::brick_reduce(int direction) {
 
 void n2048::check_finish() {
     if (max == 11) {
-        // win
+        wattron(mw.mainwin, COLOR_PAIR(0));
+        mvwprintw(mw.mainwin, HEIGHT/2, WIDTH/2-4, "You Win!");
+        wattroff(mw.mainwin, COLOR_PAIR(0));
+        wrefresh(mw.mainwin);
     }
     if (empty == 0) {
         // lose
-        // werase(mw.mainwin);
-        // wattron(mw.mainwin, COLOR_PAIR(1));
-        // mvwprintw(mw.mainwin, 9, 14, "You lose!");
-        // wattroff(mw.mainwin, COLOR_PAIR(1));
-        // wrefresh(mw.mainwin);
-        // sleep(2);
-        // endwin();
-        // exit(0);
+        wattron(mw.mainwin, COLOR_PAIR(0));
+        mvwprintw(mw.mainwin, HEIGHT/2, WIDTH/2-4, "You Lose!");
+        wattroff(mw.mainwin, COLOR_PAIR(0));
+        wrefresh(mw.mainwin);
+        sleep(2);
+        endwin();
+        exit(0);
     }
 }
 
@@ -167,6 +169,7 @@ void n2048::get_key() {
             break;
         case 'i':
             need_new = true;
+            this->check_finish();
             this->new_brick();
             this->main_refresh();
             break;
@@ -206,7 +209,11 @@ void n2048::main_refresh() {
     for (int i = 0; i < MHEIGHT; i++) {
         for (int j = 0; j < MWIDTH; j++) {
             wattron(mw.mainwin, COLOR_PAIR(gbricks[i][j].number));
-            mvwprintw(mw.mainwin, i*5, j*10, "%d", gbricks[i][j].number);
+            for (int k = 1; k < MBRICKWIDTH; k++)
+                for(int l = 1; l < MBRICKWIDTH*2-1; l++)
+                    mvwprintw(mw.mainwin, i*MBRICKWIDTH+k, j*2*MBRICKWIDTH+l, " ");
+            if (gbricks[i][j].number != 0)
+                mvwprintw(mw.mainwin, i*MBRICKWIDTH+MBRICKWIDTH/2, (j*2+1)*MBRICKWIDTH-1, "%d", gbricks[i][j].number);
             wattroff(mw.mainwin, COLOR_PAIR(gbricks[i][j].number));
         }
     }
