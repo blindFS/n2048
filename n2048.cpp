@@ -11,9 +11,9 @@ n2048::n2048() {
     for (int i = 0; i < MHEIGHT; i++) {
         for (int j = 0; j < MWIDTH; j++) {
             gbricks[i][j] = brick(i, j, 0);
+            numbers_old[i][j] = 0;
         }
     }
-    this->backup();
     this->collect_empty();
 }
 
@@ -37,7 +37,6 @@ void n2048::game_run() {
     this->main_refresh();
     // nodelay(stdscr, true);
     while (true) {
-        need_new = false;
         this->get_key();
     }
 }
@@ -119,10 +118,24 @@ void n2048::mov_brick(int direction) {
 }
 
 void n2048::brick_reduce(int direction) {
-    this->backup();
+    int t[MHEIGHT][MWIDTH];
+    int i, j;
+    for (i = 0; i < MHEIGHT; i++) {
+        for (j = 0; j < MWIDTH; j++) {
+            t[i][j] = gbricks[i][j].number;
+        }
+    }
+    need_new = false;
     this->mov_brick(direction);
     this->collect_empty();
     this->check_finish();
+    if (need_new) {
+        for (i = 0; i < MHEIGHT; i++) {
+            for (j = 0; j < MWIDTH; j++) {
+                numbers_old[i][j] = t[i][j];
+            }
+        }
+    }
     this->new_brick();
     this->main_refresh();
 }
@@ -200,20 +213,11 @@ void n2048::get_key() {
     }
 }
 
-void n2048::backup() {
-    int i, j;
-    for (i = 0; i < MHEIGHT; i++) {
-        for (j = 0; j < MWIDTH; j++) {
-            gbricks_old[i][j] = gbricks[i][j].number;
-        }
-    }
-}
-
 void n2048::undo() {
     int i, j;
     for (i = 0; i < MHEIGHT; i++) {
         for (j = 0; j < MWIDTH; j++) {
-            gbricks[i][j].number = gbricks_old[i][j];
+            gbricks[i][j].number = numbers_old[i][j];
         }
     }
     this->main_refresh();

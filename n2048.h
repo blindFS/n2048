@@ -9,7 +9,7 @@ class n2048 {
     brick *ebricks[MNUM];
     brick gbricks[MHEIGHT][MWIDTH];
     bool need_new;
-    int gbricks_old[MHEIGHT][MWIDTH];
+    int numbers_old[MHEIGHT][MWIDTH];
     void check_finish();
     void main_refresh();
     void show_score();
@@ -19,7 +19,6 @@ class n2048 {
     void mov_brick(int direction);
     bool mov_and_merge(brick *temp[MWIDTH]);
     void undo();
-    void backup();
     void paint_brick();
     void collect_empty();
     public:
