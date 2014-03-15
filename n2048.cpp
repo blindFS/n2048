@@ -128,7 +128,6 @@ void n2048::brick_reduce(int direction) {
     need_new = false;
     this->mov_brick(direction);
     this->collect_empty();
-    this->check_finish();
     if (need_new) {
         for (i = 0; i < MHEIGHT; i++) {
             for (j = 0; j < MWIDTH; j++) {
@@ -138,10 +137,11 @@ void n2048::brick_reduce(int direction) {
     }
     this->new_brick();
     this->main_refresh();
+    this->check_finish();
 }
 
 void n2048::check_finish() {
-    if (max > 10) {
+    if (max > 14) {
         wattron(mw.mainwin, COLOR_PAIR(0));
         mvwprintw(mw.mainwin, HEIGHT/2, WIDTH/2-4, "You Win!");
         wattroff(mw.mainwin, COLOR_PAIR(0));
@@ -224,7 +224,7 @@ void n2048::undo() {
 }
 
 void n2048::main_refresh() {
-    mw = mwin();
+    endwin();
     for (int i = 0; i < MHEIGHT; i++) {
         for (int j = 0; j < MWIDTH; j++) {
             wattron(mw.mainwin, COLOR_PAIR(gbricks[i][j].number));
