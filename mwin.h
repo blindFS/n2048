@@ -4,9 +4,9 @@
 #ifndef MWIN_H
 #define MWIN_H
 
-#define MHEIGHT 1
-#define MWIDTH 16
-#define MMAX 16 
+#define MHEIGHT 2
+#define MWIDTH 4
+#define MMAX 4
 #define MNUM MHEIGHT*MWIDTH
 
 #define MBRICKWIDTH 4

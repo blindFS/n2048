@@ -5,7 +5,7 @@
 
 class n2048 {
     mwin mw;
-    int max, score, empty;
+    int max, score, best, empty;
     brick *ebricks[MNUM];
     brick gbricks[MHEIGHT][MWIDTH];
     bool need_new;
@@ -22,6 +22,7 @@ class n2048 {
     void undo();
     void paint_brick();
     void collect_empty();
+    void replay();
     public:
     n2048();
     void game_run();

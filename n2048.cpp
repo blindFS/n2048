@@ -5,7 +5,7 @@ n2048::n2048() {
     srand(time(NULL));
     mw = mwin();
     max = 1;
-    score = 0;
+    score = best = 0;
     need_new = true;
     running = true;
     empty = MNUM;
@@ -60,6 +60,8 @@ bool n2048::mov_and_merge(brick *temp[MMAX], int num) {
         if (temp[i]->number == temp[i+1]->number && temp[i]->number != 0) {
             temp[i]->number++;
             score += 1 << temp[i]->number;
+            if (score > best)
+                best = score;
             if (max < temp[i]->number)
                 max = temp[i]->number;
             temp[i+1]->number = 0;
@@ -149,40 +151,37 @@ void n2048::check_finish() {
         wrefresh(mw.mainwin);
         sleep(5);
     }
+    int i, j;
     if (empty == 0) {
-        int k, i = 0;
-        brick last = *ebricks[0];
-        brick *temp[MWIDTH+MHEIGHT];
-        for (k = 0; k < MWIDTH; k++) {
-            temp[i] = &(gbricks[last.x][k]);
-            i++;
-        }
-        for (k = 0; k < MHEIGHT; k++) {
-            temp[i] = &(gbricks[k][last.y]);
-            i++;
-        }
-        for (i = 0; i < MHEIGHT+MWIDTH; i++) {
-            int n = temp[i]->number;
-            int x = temp[i]->x;
-            int y = temp[i]->y;
-            if (x > 0 && gbricks[x-1][y].number == n)
-                return;
-            if (x < MHEIGHT-1 && gbricks[x+1][y].number == n)
-                return;
-            if (y > 0 && gbricks[x][y-1].number == n)
-                return;
-            if (y < MWIDTH-1 && gbricks[x][y-1].number == n)
-                return;
+        for (i = 0; i < MHEIGHT; i++) {
+            for (j = 0; j < MWIDTH; j++) {
+                if (( j < MWIDTH-1 && gbricks[i][j].number == gbricks[i][j+1].number ) ||
+                        ( i < MHEIGHT-1 && gbricks[i][j].number == gbricks[i+1][j].number ))
+                    return;
+            }
         }
 
         wattron(mw.mainwin, COLOR_PAIR(0));
-        mvwprintw(mw.mainwin, HEIGHT/2, WIDTH/2-4, "You Lose!");
+        mvwprintw(mw.mainwin, HEIGHT/2, WIDTH/2-10, "Failed! Continue? y/n");
         wattroff(mw.mainwin, COLOR_PAIR(0));
         wrefresh(mw.mainwin);
         running = false;
         sleep(2);
-        // endwin();
-        // exit(0);
+        flushinp();
+        this->replay();
+    }
+}
+
+void n2048::replay() {
+    if (getchar() == 'y') {
+        for (int i = 0; i < MHEIGHT; i++)
+            for (int j = 0; j < MWIDTH; j++)
+                gbricks[i][j].number = 0;
+        running = true;
+        score = 0;
+        this->collect_empty();
+        this->new_brick();
+        this->main_refresh();
     }
 }
 
@@ -238,6 +237,7 @@ void n2048::undo() {
 
 void n2048::main_refresh() {
     endwin();
+    werase(mw.mainwin);
     for (int i = 0; i < MHEIGHT; i++) {
         for (int j = 0; j < MWIDTH; j++) {
             wattron(mw.mainwin, COLOR_PAIR(gbricks[i][j].number));
@@ -249,6 +249,7 @@ void n2048::main_refresh() {
             wattroff(mw.mainwin, COLOR_PAIR(gbricks[i][j].number));
         }
     }
+    box(mw.mainwin, 0, 0);
     wrefresh(mw.mainwin);
     this->show_score();
 }
@@ -256,6 +257,6 @@ void n2048::main_refresh() {
 void n2048::show_score()
 {
     werase(mw.scorewin);
-    mvwprintw(mw.scorewin, 2, 2, "score:%d", score);
+    mvwprintw(mw.scorewin, 2, 2, "score:%d best:%d", score, best);
     wrefresh(mw.scorewin);
 }

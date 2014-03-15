@@ -25,5 +25,4 @@ mwin::mwin() {
     refresh();
     mainwin    = newwin(HEIGHT+1, WIDTH+2, 0, 0);
     scorewin   = newwin(10, 20, HEIGHT+1, WIDTH/2-10);
-    box(mainwin, 0, 0);
 }
