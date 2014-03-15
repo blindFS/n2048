@@ -10,7 +10,7 @@ mwin::mwin() {
         printf("ERROR, your terminal can't display colors.\n");
     }
     getmaxyx(stdscr, y, x);
-    if(x < WIDTH || y < HEIGHT) {
+    if(x < WIDTH+2 || y < HEIGHT+3) {
         endwin();
         printf("ERROR, your terminal is too small. (min %ux%u)\n", WIDTH, HEIGHT);
     }
@@ -19,10 +19,10 @@ mwin::mwin() {
     start_color();
 
     for (int i = 0; i < 15; i++)
-        init_pair(i, COLOR_BLACK, 65+3*i);
+        init_pair(i, COLOR_BLACK, 200+2*i);
 
     curs_set(0); // remove curser
     refresh();
     mainwin    = newwin(HEIGHT+1, WIDTH+2, 0, 0);
-    scorewin   = newwin(10, 20, HEIGHT+1, WIDTH/2-10);
+    scorewin   = newwin(3, WIDTH+2, HEIGHT+2, 0);
 }

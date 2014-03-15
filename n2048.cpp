@@ -1,5 +1,6 @@
 #include "n2048.h"
 #include <unistd.h>
+#include <math.h>
 
 n2048::n2048() {
     srand(time(NULL));
@@ -80,9 +81,8 @@ void n2048::mov_brick(int direction) {
         case 0:
             for (i = 0; i < MHEIGHT; i++) {
                 move =true;
-                for (j = 0; j < MWIDTH; j++) {
+                for (j = 0; j < MWIDTH; j++)
                     temp[j] = &(gbricks[i][j]);
-                }
                 while (move)
                     move = this->mov_and_merge(temp, MWIDTH);
             }
@@ -90,9 +90,8 @@ void n2048::mov_brick(int direction) {
         case 1:
             for (j = 0; j < MWIDTH; j++) {
                 move =true;
-                for (i = 0; i < MHEIGHT; i++) {
+                for (i = 0; i < MHEIGHT; i++)
                     temp[MHEIGHT-i-1] = &(gbricks[i][j]);
-                }
                 while (move)
                     move = this->mov_and_merge(temp, MHEIGHT);
             }
@@ -100,9 +99,8 @@ void n2048::mov_brick(int direction) {
         case 2:
             for (j = 0; j < MWIDTH; j++) {
                 move =true;
-                for (i = 0; i < MHEIGHT; i++) {
+                for (i = 0; i < MHEIGHT; i++)
                     temp[i] = &(gbricks[i][j]);
-                }
                 while (move)
                     move = this->mov_and_merge(temp, MHEIGHT);
             }
@@ -110,9 +108,8 @@ void n2048::mov_brick(int direction) {
         case 3:
             for (i = 0; i < MHEIGHT; i++) {
                 move =true;
-                for (j = 0; j < MWIDTH; j++) {
+                for (j = 0; j < MWIDTH; j++)
                     temp[MWIDTH-j-1] = &(gbricks[i][j]);
-                }
                 while (move)
                     move = this->mov_and_merge(temp, MWIDTH);
             }
@@ -123,21 +120,16 @@ void n2048::mov_brick(int direction) {
 void n2048::brick_reduce(int direction) {
     int t[MHEIGHT][MWIDTH];
     int i, j;
-    for (i = 0; i < MHEIGHT; i++) {
-        for (j = 0; j < MWIDTH; j++) {
+    for (i = 0; i < MHEIGHT; i++)
+        for (j = 0; j < MWIDTH; j++)
             t[i][j] = gbricks[i][j].number;
-        }
-    }
     need_new = false;
     this->mov_brick(direction);
     this->collect_empty();
-    if (need_new) {
-        for (i = 0; i < MHEIGHT; i++) {
-            for (j = 0; j < MWIDTH; j++) {
+    if (need_new)
+        for (i = 0; i < MHEIGHT; i++)
+            for (j = 0; j < MWIDTH; j++)
                 numbers_old[i][j] = t[i][j];
-            }
-        }
-    }
     this->new_brick();
     this->main_refresh();
     this->check_finish();
@@ -153,16 +145,14 @@ void n2048::check_finish() {
     }
     int i, j;
     if (empty == 0) {
-        for (i = 0; i < MHEIGHT; i++) {
-            for (j = 0; j < MWIDTH; j++) {
+        for (i = 0; i < MHEIGHT; i++)
+            for (j = 0; j < MWIDTH; j++)
                 if (( j < MWIDTH-1 && gbricks[i][j].number == gbricks[i][j+1].number ) ||
                         ( i < MHEIGHT-1 && gbricks[i][j].number == gbricks[i+1][j].number ))
                     return;
-            }
-        }
 
         wattron(mw.mainwin, COLOR_PAIR(0));
-        mvwprintw(mw.mainwin, HEIGHT/2, WIDTH/2-10, "Failed! Continue? y/n");
+        mvwprintw(mw.mainwin, HEIGHT/2, WIDTH > 20 ? WIDTH/2-10 : 0, "Failed! Continue? y/n");
         wattroff(mw.mainwin, COLOR_PAIR(0));
         wrefresh(mw.mainwin);
         running = false;
@@ -227,11 +217,9 @@ void n2048::get_key() {
 
 void n2048::undo() {
     int i, j;
-    for (i = 0; i < MHEIGHT; i++) {
-        for (j = 0; j < MWIDTH; j++) {
+    for (i = 0; i < MHEIGHT; i++)
+        for (j = 0; j < MWIDTH; j++)
             gbricks[i][j].number = numbers_old[i][j];
-        }
-    }
     this->main_refresh();
 }
 
@@ -256,7 +244,8 @@ void n2048::main_refresh() {
 
 void n2048::show_score()
 {
+    int nwidth = floor(log10(abs(score)))+floor(log10(abs(best)));
     werase(mw.scorewin);
-    mvwprintw(mw.scorewin, 2, 2, "score:%d best:%d", score, best);
+    mvwprintw(mw.scorewin, 0, WIDTH > 12+nwidth ? (WIDTH-nwidth)/2-6: 0, "score:%d best:%d", score, best);
     wrefresh(mw.scorewin);
 }
