@@ -7,6 +7,7 @@ n2048::n2048() {
     max = 1;
     score = 0;
     need_new = true;
+    running = true;
     empty = MNUM;
     for (int i = 0; i < MHEIGHT; i++) {
         for (int j = 0; j < MWIDTH; j++) {
@@ -36,16 +37,16 @@ void n2048::game_run() {
     this->new_brick();
     this->main_refresh();
     // nodelay(stdscr, true);
-    while (true) {
+    while (running) {
         this->get_key();
     }
 }
 
-bool n2048::mov_and_merge(brick *temp[MWIDTH]) {
+bool n2048::mov_and_merge(brick *temp[MMAX], int num) {
     bool moved = false;
     int i, j, t;
-    for (i = 0; i < MWIDTH; i++) {
-        for (j = 0; j < MWIDTH-i-1; j++) {
+    for (i = 0; i < num; i++) {
+        for (j = 0; j < num-i-1; j++) {
             if (temp[j]->number == 0 && temp[j+1]->number != 0) {
                 t = temp[j]->number;
                 temp[j]->number = temp[j+1]->number;
@@ -55,10 +56,10 @@ bool n2048::mov_and_merge(brick *temp[MWIDTH]) {
             }
         }
     }
-    for (i = 0; i < MWIDTH-1; i++) {
+    for (i = 0; i < num-1; i++) {
         if (temp[i]->number == temp[i+1]->number && temp[i]->number != 0) {
-            score += 1 << temp[i]->number;
             temp[i]->number++;
+            score += 1 << temp[i]->number;
             if (max < temp[i]->number)
                 max = temp[i]->number;
             temp[i+1]->number = 0;
@@ -72,7 +73,7 @@ bool n2048::mov_and_merge(brick *temp[MWIDTH]) {
 void n2048::mov_brick(int direction) {
     int i, j;
     bool move;
-    brick *temp[MWIDTH];
+    brick *temp[MMAX];
     switch (direction) {
         case 0:
             for (i = 0; i < MHEIGHT; i++) {
@@ -81,7 +82,7 @@ void n2048::mov_brick(int direction) {
                     temp[j] = &(gbricks[i][j]);
                 }
                 while (move)
-                    move = this->mov_and_merge(temp);
+                    move = this->mov_and_merge(temp, MWIDTH);
             }
             break;
         case 1:
@@ -91,7 +92,7 @@ void n2048::mov_brick(int direction) {
                     temp[MHEIGHT-i-1] = &(gbricks[i][j]);
                 }
                 while (move)
-                    move = this->mov_and_merge(temp);
+                    move = this->mov_and_merge(temp, MHEIGHT);
             }
             break;
         case 2:
@@ -101,7 +102,7 @@ void n2048::mov_brick(int direction) {
                     temp[i] = &(gbricks[i][j]);
                 }
                 while (move)
-                    move = this->mov_and_merge(temp);
+                    move = this->mov_and_merge(temp, MHEIGHT);
             }
             break;
         case 3:
@@ -111,7 +112,7 @@ void n2048::mov_brick(int direction) {
                     temp[MWIDTH-j-1] = &(gbricks[i][j]);
                 }
                 while (move)
-                    move = this->mov_and_merge(temp);
+                    move = this->mov_and_merge(temp, MWIDTH);
             }
             break;
     }
@@ -149,26 +150,39 @@ void n2048::check_finish() {
         sleep(5);
     }
     if (empty == 0) {
-        // lose
-        brick temp = *ebricks[0];
-        int x = temp.x;
-        int y = temp.y;
-        if (x > 0 && gbricks[x-1][y].number == temp.number)
-            return;
-        if (x < MHEIGHT-1 && gbricks[x+1][y].number == temp.number)
-            return;
-        if (y > 0 && gbricks[x][y-1].number == temp.number)
-            return;
-        if (y < MWIDTH && gbricks[x-1][y].number == temp.number)
-            return;
+        int k, i = 0;
+        brick last = *ebricks[0];
+        brick *temp[MWIDTH+MHEIGHT];
+        for (k = 0; k < MWIDTH; k++) {
+            temp[i] = &(gbricks[last.x][k]);
+            i++;
+        }
+        for (k = 0; k < MHEIGHT; k++) {
+            temp[i] = &(gbricks[k][last.y]);
+            i++;
+        }
+        for (i = 0; i < MHEIGHT+MWIDTH; i++) {
+            int n = temp[i]->number;
+            int x = temp[i]->x;
+            int y = temp[i]->y;
+            if (x > 0 && gbricks[x-1][y].number == n)
+                return;
+            if (x < MHEIGHT-1 && gbricks[x+1][y].number == n)
+                return;
+            if (y > 0 && gbricks[x][y-1].number == n)
+                return;
+            if (y < MWIDTH-1 && gbricks[x][y-1].number == n)
+                return;
+        }
 
         wattron(mw.mainwin, COLOR_PAIR(0));
         mvwprintw(mw.mainwin, HEIGHT/2, WIDTH/2-4, "You Lose!");
         wattroff(mw.mainwin, COLOR_PAIR(0));
         wrefresh(mw.mainwin);
+        running = false;
         sleep(2);
-        endwin();
-        exit(0);
+        // endwin();
+        // exit(0);
     }
 }
 
@@ -196,10 +210,9 @@ void n2048::get_key() {
             this->brick_reduce(3);
             break;
         case 'i':
-            need_new = true;
-            this->check_finish();
-            this->new_brick();
-            this->main_refresh();
+            // need_new = true;
+            // this->new_brick();
+            // this->main_refresh();
             break;
         case 'r':
             this->main_refresh();
