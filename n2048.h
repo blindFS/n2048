@@ -6,11 +6,12 @@
 class n2048 {
     mwin mw;
     int max, score, best, empty;
-    brick *ebricks[MNUM];
-    brick gbricks[MHEIGHT][MWIDTH];
+    int mheight, mwidth, mmax, mnum, mbrickwidth, height, width;
+    brick **ebricks;
+    brick **gbricks;
     bool need_new;
     bool running;
-    int numbers_old[MHEIGHT][MWIDTH];
+    int **numbers_old;
     void check_finish();
     void main_refresh();
     void show_score();
@@ -18,13 +19,14 @@ class n2048 {
     void brick_reduce(int direction);
     void new_brick();
     void mov_brick(int direction);
-    bool mov_and_merge(brick *temp[MWIDTH], int num);
+    bool mov_and_merge(brick **temp, int num);
     void undo();
     void paint_brick();
     void collect_empty();
     void replay();
     public:
-    n2048();
+    n2048(int hgt, int wid);
+    n2048() {};
     void game_run();
 };
 

@@ -1,7 +1,15 @@
 #include "mwin.h"
 
-mwin::mwin() {
+mwin::mwin(int hgt, int wid) {
     int x, y;
+    mheight     = hgt;
+    mwidth      = wid;
+    mmax        = std::max(hgt, wid);
+    mnum        = hgt*wid;
+    mbrickwidth = 4;
+    height      = mbrickwidth*hgt;
+    width       = 2*wid*mbrickwidth;
+
     initscr();
 
     if(has_colors() != TRUE)
@@ -10,9 +18,9 @@ mwin::mwin() {
         printf("ERROR, your terminal can't display colors.\n");
     }
     getmaxyx(stdscr, y, x);
-    if(x < WIDTH+2 || y < HEIGHT+3) {
+    if(x < width+2 || y < height+3) {
         endwin();
-        printf("ERROR, your terminal is too small. (min %ux%u)\n", WIDTH, HEIGHT);
+        printf("ERROR, your terminal is too small. (min %ux%u)\n", width, height);
     }
     clear();
     noecho();
@@ -23,6 +31,6 @@ mwin::mwin() {
 
     curs_set(0); // remove curser
     refresh();
-    mainwin    = newwin(HEIGHT+1, WIDTH+2, 0, 0);
-    scorewin   = newwin(3, WIDTH+2, HEIGHT+2, 0);
+    mainwin    = newwin(height+1, width+2, 0, 0);
+    scorewin   = newwin(3, width+2, height+2, 0);
 }
